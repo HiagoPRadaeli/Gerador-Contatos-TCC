@@ -8,171 +8,116 @@
 </head>
 <body>
 
-    <div class="form-container">
-        <header class="form-header">
+    <div class="app-container">
+        <header class="app-header">
             <h1>Gerador de Contratos Inteligente</h1>
+            <p>Selecione o modelo de contrato que deseja gerar:</p>
         </header>
 
-        <form id="contract-form" class="contract-form">
+        <nav class="main-nav">
+            <button class="nav-button" data-form="servicos">Prestação de Serviços</button>
+            <button class="nav-button" data-form="venda">Compra e Venda</button>
+            <button class="nav-button" data-form="locacao">Locação de Imóvel</button>
+        </nav>
+
+        <form id="contract-form" class="contract-form hidden">
+            <h2 id="form-title" class="form-title"></h2>
+
             <fieldset>
-                <legend>Dados da Parte 1 (Contratante)</legend>
+                <legend id="parte1-legend">Dados da Parte 1</legend>
                 <div class="form-row">
-                    <div class="form-group col-2">
-                        <label for="contratante-nome">Nome completo ou razão social</label>
-                        <input type="text" id="contratante-nome" name="contratante-nome" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contratante-doc">CNPJ/CPF</label>
-                        <input type="text" id="contratante-doc" name="contratante-doc" required>
-                    </div>
+                    <div class="form-group col-2"><label for="parte1-nome">Nome completo ou razão social</label><input type="text" id="parte1-nome" required></div>
+                    <div class="form-group col-1"><label for="parte1-doc">CNPJ/CPF</label><input type="text" id="parte1-doc" required></div>
                 </div>
-                <div class="form-group">
-                    <label for="contratante-endereco">Endereço</label>
-                    <input type="text" id="contratante-endereco" name="contratante-endereco" required>
-                </div>
+                <div class="form-group"><label for="parte1-endereco">Endereço Completo</label><input type="text" id="parte1-endereco" required></div>
                 <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="contratante-email">E-mail</label>
-                        <input type="email" id="contratante-email" name="contratante-email" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contratante-telefone">Telefone</label>
-                        <input type="tel" id="contratante-telefone" name="contratante-telefone">
-                    </div>
+                    <div class="form-group"><label for="parte1-email">E-mail</label><input type="email" id="parte1-email" required></div>
+                    <div class="form-group"><label for="parte1-telefone">Telefone</label><input type="tel" id="parte1-telefone"></div>
                 </div>
             </fieldset>
 
             <fieldset>
-                <legend>Dados da Parte 2 (Contratada)</legend>
+                <legend id="parte2-legend">Dados da Parte 2</legend>
                 <div class="form-row">
-                    <div class="form-group col-2">
-                        <label for="contratada-nome">Nome completo ou razão social</label>
-                        <input type="text" id="contratada-nome" name="contratada-nome" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contratada-doc">CNPJ/CPF</label>
-                        <input type="text" id="contratada-doc" name="contratada-doc" required>
-                    </div>
+                    <div class="form-group col-2"><label for="parte2-nome">Nome completo ou razão social</label><input type="text" id="parte2-nome" required></div>
+                    <div class="form-group col-1"><label for="parte2-doc">CNPJ/CPF</label><input type="text" id="parte2-doc" required></div>
                 </div>
-                <div class="form-group">
-                    <label for="contratada-endereco">Endereço</label>
-                    <input type="text" id="contratada-endereco" name="contratada-endereco" required>
-                </div>
+                <div class="form-group"><label for="parte2-endereco">Endereço Completo</label><input type="text" id="parte2-endereco" required></div>
                 <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="contratada-email">E-mail</label>
-                        <input type="email" id="contratada-email" name="contratada-email" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contratada-telefone">Telefone</label>
-                        <input type="tel" id="contratada-telefone" name="contratada-telefone">
-                    </div>
+                    <div class="form-group"><label for="parte2-email">E-mail</label><input type="email" id="parte2-email" required></div>
+                    <div class="form-group"><label for="parte2-telefone">Telefone</label><input type="tel" id="parte2-telefone"></div>
                 </div>
             </fieldset>
 
             <fieldset>
                 <legend>Detalhes do Contrato</legend>
-                <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="contrato-modelo">Modelo do Contrato</label>
-                        <select id="contrato-modelo" name="contrato-modelo" required>
-                            <option value="" disabled selected>Selecione um modelo...</option>
-                            <option value="Prestação de Serviços">Prestação de Serviços</option>
-                            <option value="Venda e Compra">Venda e Compra</option>
-                            <option value="Locação de Imóvel">Locação de Imóvel</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-2">
-                        <label for="contrato-nome">Nome do contrato (ex: Contrato de Marketing Digital)</label>
-                        <input type="text" id="contrato-nome" name="contrato-nome" required>
-                    </div>
-                </div>
                 <div class="form-group">
-                    <label for="contrato-objeto">Objeto do contrato (descrição do serviço ou produto)</label>
-                    <textarea id="contrato-objeto" name="contrato-objeto" rows="4" required></textarea>
+                    <label for="contrato-objeto" id="objeto-label">Objeto do Contrato</label>
+                    <textarea id="contrato-objeto" rows="4" required></textarea>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="contrato-valor">Valor total do contrato</label>
-                        <input type="text" id="contrato-valor" name="contrato-valor" placeholder="Ex: 1.500,00" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contrato-pagamento">Forma de pagamento</label>
-                        <select id="contrato-pagamento" name="contrato-pagamento">
-                            <option value="Pix">Pix</option>
-                            <option value="Boleto Bancário">Boleto Bancário</option>
-                            <option value="Transferência Bancária (TED/DOC)">Transferência Bancária (TED/DOC)</option>
-                            <option value="Cartão de Crédito">Cartão de Crédito</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label for="contrato-valor">Valor Total do Contrato</label><input type="text" id="contrato-valor" placeholder="R$ 0,00" required></div>
+                    <div class="form-group"><label for="contrato-pagamento">Forma de Pagamento Principal</label><input type="text" id="contrato-pagamento" placeholder="Ex: Pix, Boleto Mensal" required></div>
                 </div>
+                 <div class="form-row">
+                    <div class="form-group"><label for="contrato-inicio">Data de Início</label><input type="date" id="contrato-inicio" required></div>
+                    <div class="form-group"><label for="contrato-termino">Data de Término (se houver)</label><input type="date" id="contrato-termino"></div>
+                </div>
+            </fieldset>
+
+            <fieldset class="form-section hidden" id="locacao-fields">
+                <legend>Detalhes Específicos da Locação</legend>
                 <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="contrato-inicio">Data de início</label>
-                        <input type="date" id="contrato-inicio" name="contrato-inicio" required>
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="contrato-termino">Data de término</label>
-                        <input type="date" id="contrato-termino" name="contrato-termino">
-                    </div>
+                    <div class="form-group"><label for="locacao-garantia-tipo">Tipo de Garantia</label><select id="locacao-garantia-tipo"><option value="Não se aplica" selected>Não se aplica</option><option value="Caução em Dinheiro">Caução em Dinheiro</option><option value="Fiador">Fiador</option><option value="Seguro Fiança">Seguro Fiança</option></select></div>
+                    <div class="form-group"><label for="locacao-garantia-valor">Valor da Garantia (se aplicável)</label><input type="text" id="locacao-garantia-valor" placeholder="R$ 0,00"></div>
+                </div>
+                <div class="form-group"><label for="locacao-finalidade">Finalidade da Locação</label><input type="text" id="locacao-finalidade" value="Residencial"></div>
+            </fieldset>
+
+            <fieldset class="form-section hidden" id="venda-fields">
+                <legend>Detalhes Específicos da Venda</legend>
+                 <div class="form-group">
+                    <label for="venda-entrega">Data e Local da Entrega do Bem</label>
+                    <input type="text" id="venda-entrega" placeholder="Ex: 30/12/2025 na residência do comprador">
+                </div>
+                 <div class="form-group">
+                    <label for="venda-condicao">Condição do Bem</label>
+                    <input type="text" id="venda-condicao" placeholder="Ex: Novo, usado, no estado em que se encontra">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Condições de Pagamento Detalhadas</legend>
+                <div class="form-row">
+                    <div class="form-group"><label for="pagamento-dia-vencimento">Dia do Vencimento (para parcelas)</label><input type="number" id="pagamento-dia-vencimento" min="1" max="31" placeholder="Ex: 10"></div>
+                </div>
+                <div class="form-group"><label for="pagamento-dados-bancarios">Dados Bancários para Pagamento (se aplicável)</label><input type="text" id="pagamento-dados-bancarios" placeholder="Ex: Pix (CPF/CNPJ), ou Banco, Agência, Conta"></div>
+                 <div class="form-row">
+                    <div class="form-group"><label for="pagamento-multa-percentual">Multa por Atraso (%)</label><input type="number" id="pagamento-multa-percentual" placeholder="Ex: 2"></div>
+                    <div class="form-group"><label for="pagamento-juros">Juros Mensais por Atraso (%)</label><input type="number" id="pagamento-juros" placeholder="Ex: 1"></div>
                 </div>
             </fieldset>
             
             <fieldset>
-                <legend>Condições de Pagamento</legend>
-                <div class="form-row">
-                    <div class="form-group col-1">
-                        <label for="pagamento-multa-percentual">Multa por atraso de pagamento (%)</label>
-                        <input type="number" id="pagamento-multa-percentual" name="pagamento-multa-percentual" placeholder="Ex: 2">
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="pagamento-multa-valor">Valor fixo da multa por atraso (R$)</label>
-                        <input type="text" id="pagamento-multa-valor" name="pagamento-multa-valor" placeholder="Ex: 50,00">
-                    </div>
-                    <div class="form-group col-1">
-                        <label for="pagamento-juros">Juros por atraso (a.m. %)</label>
-                        <input type="text" id="pagamento-juros" name="pagamento-juros" placeholder="Ex: 1,0">
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
                 <legend>Cláusulas Opcionais</legend>
                 <div class="checkbox-container">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="clausula-multa" name="clausula-multa">
-                        <label for="clausula-multa">Multa por rescisão</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="clausula-confidencialidade" name="clausula-confidencialidade">
-                        <label for="clausula-confidencialidade">Confidencialidade</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="clausula-exclusividade" name="clausula-exclusividade">
-                        <label for="clausula-exclusividade">Exclusividade</label>
-                    </div>
+                    <div class="checkbox-group"><input type="checkbox" id="clausula-multa-rescisao"><label for="clausula-multa-rescisao">Multa por Rescisão</label></div>
+                    <div class="checkbox-group"><input type="checkbox" id="clausula-confidencialidade"><label for="clausula-confidencialidade">Confidencialidade</label></div>
+                    <div class="checkbox-group"><input type="checkbox" id="clausula-exclusividade"><label for="clausula-exclusividade">Exclusividade</label></div>
                 </div>
             </fieldset>
-
+            
             <fieldset>
                 <legend>Disposições Gerais</legend>
-                <div class="form-group">
-                    <label for="gerais-foro">Foro de eleição (Cidade/Estado onde serão resolvidas disputas judiciais)</label>
-                    <input type="text" id="gerais-foro" name="gerais-foro" placeholder="Ex: Chapecó/SC" required>
-                </div>
-                <div class="form-group">
-                    <label for="gerais-testemunhas">Número de testemunhas</label>
-                    <select id="gerais-testemunhas" name="gerais-testemunhas">
-                        <option value="0">0 (zero)</option>
-                        <option value="1">1 (uma)</option>
-                        <option value="2" selected>2 (duas)</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group"><label for="gerais-foro">Foro de Eleição (Cidade/Estado)</label><input type="text" id="gerais-foro" placeholder="Ex: Chapecó/SC" required></div>
+                    <div class="form-group"><label for="gerais-testemunhas">Número de Testemunhas</label><select id="gerais-testemunhas"><option value="0">0 (zero)</option><option value="1">1 (uma)</option><option value="2" selected>2 (duas)</option></select></div>
                 </div>
             </fieldset>
 
             <div class="button-group">
-                <button type="submit" class="btn btn-primary">Gerar contrato</button>
-                <button type="reset" class="btn btn-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Gerar Contrato</button>
+                <button type="reset" class="btn btn-secondary">Limpar</button>
             </div>
         </form>
     </div>

@@ -13,81 +13,133 @@ app.use(bodyParser.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post('/gerar-contrato-completo', async (req, res) => {
-    console.log("-> Requisição recebida em /gerar-contrato-completo...");
+    console.log("-> Requisição recebida para gerar contrato completo...");
     
-    const { parte1, parte2, detalhes, condicoesPagamento, clausulasOpcionais, disposicoesGerais } = req.body;
-
-    // Função para formatar o valor como moeda brasileira
-    const formatarMoeda = (valor) => {
-        if (!valor) return 'Não especificado';
-        // Remove pontos de milhar, troca vírgula por ponto para parseFloat, depois formata
-        let numero = parseFloat(valor.replace(/\./g, '').replace(',', '.'));
-        if (isNaN(numero)) return valor; // Retorna o valor original se não for um número válido
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numero);
-    };
+    const data = req.body;
 
     let prompt = `
-Você é um especialista em direito contratual incumbido de redigir um contrato formal e completo.
-Com base EXCLUSIVAMENTE nos dados fornecidos abaixo, redija um **Contrato de ${detalhes.modeloContrato}**, com o título específico de "${detalhes.nomeContrato}".
+Você é um especialista em direito contratual brasileiro. Sua tarefa é redigir um contrato formal, completo e juridicamente sólido com base EXCLUSIVAMENTE nos dados fornecidos.
+
+**Modelo do Contrato Solicitado:** ${data.modeloContrato}
 
 **DADOS FORNECIDOS:**
-
-**1. PARTE 1 (Identificada como Contratante, Vendedor ou Locador, conforme o modelo do contrato):**
-- Nome/Razão Social: ${parte1.nome}
-- CPF/CNPJ: ${parte1.doc}
-- Endereço: ${parte1.endereco}
-- E-mail: ${parte1.email}
-- Telefone: ${parte1.telefone}
-
-**2. PARTE 2 (Identificada como Contratada, Comprador ou Locatário, conforme o modelo do contrato):**
-- Nome/Razão Social: ${parte2.nome}
-- CPF/CNPJ: ${parte2.doc}
-- Endereço: ${parte2.endereco}
-- E-mail: ${parte2.email}
-- Telefone: ${parte2.telefone}
-
-**3. DETALHES DO CONTRATO:**
-- Objeto do Contrato: ${detalhes.objeto}
-- Valor Total: ${formatarMoeda(detalhes.valor)}
-- Forma de Pagamento: ${detalhes.formaPagamento}
-- Data de Início: ${detalhes.dataInicio}
-- Data de Término: ${detalhes.dataTermino || 'Indeterminado'}
-
-**4. CONDIÇÕES DE PAGAMENTO ADICIONAIS:**
-- Multa Percentual por Atraso: ${condicoesPagamento.multaPercentual ? condicoesPagamento.multaPercentual + '%' : 'Não especificado'}
-- Multa com Valor Fixo por Atraso: ${condicoesPagamento.multaValor ? formatarMoeda(condicoesPagamento.multaValor) : 'Não especificado'}
-- Juros Mensais por Atraso: ${condicoesPagamento.juros ? condicoesPagamento.juros + '%' : 'Não especificado'}
-
-**5. DISPOSIÇÕES GERAIS:**
-- Foro de Eleição: ${disposicoesGerais.foro}
-- Número de Testemunhas: ${disposicoesGerais.testemunhas}
-
-**INSTRUÇÕES PARA A IA:**
-
-1.  Ajuste a nomenclatura das partes (Contratante/Contratada, Vendedor/Comprador, Locador/Locatário) de acordo com o modelo de contrato de "${detalhes.modeloContrato}".
-2.  Redija o contrato completo, incluindo cláusulas essenciais apropriadas para o modelo.
-3.  Crie uma cláusula de pagamento detalhada, incorporando o valor, a forma de pagamento, e as condições de multa (percentual E/OU valor fixo) e juros por atraso, se especificadas.
-4.  Crie uma cláusula "Do Foro" com base no foro de eleição fornecido.
 `;
 
+    // Adiciona as partes com a nomenclatura correta
+    if (data.modeloContrato === 'Locação de Imóvel') {
+        prompt += `
+**1. LOCADOR(A):**
+- Nome/Razão Social: ${data.parte1.nome}
+- CPF/CNPJ: ${data.parte1.doc}
+- Endereço: ${data.parte1.endereco}
+- E-mail: ${data.parte1.email}
+- Telefone: ${data.parte1.telefone}
+
+**2. LOCATÁRIO(A):**
+- Nome/Razão Social: ${data.parte2.nome}
+- CPF/CNPJ: ${data.parte2.doc}
+- Endereço: ${data.parte2.endereco}
+- E-mail: ${data.parte2.email}
+- Telefone: ${data.parte2.telefone}
+`;
+    } else if (data.modeloContrato === 'Venda e Compra') {
+        prompt += `
+**1. VENDEDOR(A):**
+- Nome/Razão Social: ${data.parte1.nome}
+- CPF/CNPJ: ${data.parte1.doc}
+- Endereço: ${data.parte1.endereco}
+- E-mail: ${data.parte1.email}
+- Telefone: ${data.parte1.telefone}
+
+**2. COMPRADOR(A):**
+- Nome/Razão Social: ${data.parte2.nome}
+- CPF/CNPJ: ${data.parte2.doc}
+- Endereço: ${data.parte2.endereco}
+- E-mail: ${data.parte2.email}
+- Telefone: ${data.parte2.telefone}
+`;
+    } else { // Prestação de Serviços
+        prompt += `
+**1. CONTRATANTE:**
+- Nome/Razão Social: ${data.parte1.nome}
+- CPF/CNPJ: ${data.parte1.doc}
+- Endereço: ${data.parte1.endereco}
+- E-mail: ${data.parte1.email}
+- Telefone: ${data.parte1.telefone}
+
+**2. CONTRATADA:**
+- Nome/Razão Social: ${data.parte2.nome}
+- CPF/CNPJ: ${data.parte2.doc}
+- Endereço: ${data.parte2.endereco}
+- E-mail: ${data.parte2.email}
+- Telefone: ${data.parte2.telefone}
+`;
+    }
+    
+    prompt += `
+**3. DETALHES GERAIS DO CONTRATO:**
+- Objeto: ${data.detalhesContrato.objeto}
+- Valor Total: ${data.detalhesContrato.valor}
+- Forma de Pagamento Principal: ${data.detalhesContrato.formaPagamento}
+- Data de Início: ${data.detalhesContrato.dataInicio}
+- Data de Término: ${data.detalhesContrato.dataTermino || 'Prazo Indeterminado'}
+`;
+
+    if (data.modeloContrato === 'Locação de Imóvel') {
+        prompt += `
+**4. DETALHES DA LOCAÇÃO:**
+- Tipo de Garantia: ${data.detalhesLocacao.garantiaTipo}
+- Valor da Garantia: ${data.detalhesLocacao.garantiaValor || 'Não aplicável'}
+- Finalidade: ${data.detalhesLocacao.finalidade}
+`;
+    }
+    
+    if (data.modeloContrato === 'Venda e Compra') {
+        prompt += `
+**4. DETALHES DA VENDA:**
+- Data e Local de Entrega: ${data.detalhesVenda.entrega}
+- Condição do Bem: ${data.detalhesVenda.condicao}
+`;
+    }
+    
+    prompt += `
+**5. CONDIÇÕES DE PAGAMENTO DETALHADAS:**
+- Dia do Vencimento das Parcelas: todo dia ${data.condicoesPagamento.diaVencimento || 'N/A'}
+- Dados Bancários para Pagamento: ${data.condicoesPagamento.dadosBancarios || 'Não especificado'}
+- Multa por Atraso: ${data.condicoesPagamento.multaPercentual || '0'}%
+- Juros Mensais por Atraso: ${data.condicoesPagamento.juros || '0'}%
+
+**6. DISPOSIÇÕES GERAIS:**
+- Foro de Eleição: ${data.disposicoesGerais.foro}
+- Número de Testemunhas: ${data.disposicoesGerais.testemunhas}
+`;
+
+    prompt += `
+**INSTRUÇÕES DE GERAÇÃO:**
+1.  Comece com o título do contrato.
+2.  Inicie com a cláusula de qualificação das partes, usando a nomenclatura correta (Locador/Locatário, Vendedor/Comprador, Contratante/Contratada).
+3.  Crie as cláusulas essenciais para o modelo de contrato "${data.modeloContrato}", detalhando o Objeto, o Preço e as Condições de Pagamento (incluindo as regras de atraso como multa e juros), o Prazo de Vigência e outras pertinentes ao modelo (como Garantia para locação ou Entrega para venda).
+`;
+    
     const opcionais = [];
-    if (clausulasOpcionais.multa) opcionais.push("Multa por Rescisão Contratual");
-    if (clausulasOpcionais.confidencialidade) opcionais.push("Confidencialidade");
-    if (clausulasOpcionais.exclusividade) opcionais.push("Exclusividade");
+    if (data.clausulasOpcionais.multaRescisao) opcionais.push("Multa por Rescisão Contratual");
+    if (data.clausulasOpcionais.confidencialidade) opcionais.push("Confidencialidade");
+    if (data.clausulasOpcionais.exclusividade) opcionais.push("Exclusividade");
 
     if (opcionais.length > 0) {
-        prompt += `5. Inclua também as seguintes cláusulas opcionais: ${opcionais.join(', ')}.\n`;
+        prompt += `4. Inclua, obrigatoriamente, as seguintes cláusulas opcionais: ${opcionais.join(', ')}.\n`;
     }
 
-    prompt += `6. Ao final do contrato, adicione um fecho padrão e linhas para as assinaturas das partes e das ${disposicoesGerais.testemunhas} testemunhas solicitadas.`;
-    prompt += `7. Formate a saída final em HTML simples, usando <h2> para os títulos das cláusulas e <p> para os parágrafos. Não inclua as tags <html>, <head> ou <body>.`;
+    prompt += `5. Adicione uma cláusula "Do Foro" com a cidade e estado fornecidos.
+6.  Finalize com um parágrafo de fecho padrão ("E, por estarem assim justos e contratados...") e adicione as linhas para as assinaturas das partes e das ${data.disposicoesGerais.testemunhas} testemunhas.
+7.  A saída deve ser em HTML, com títulos de cláusulas em <h2> (Ex: <h2>Cláusula Primeira - Do Objeto</h2>) e o texto em <p>. Não inclua as tags <html>, <head> ou <body>.`;
     
     try {
         const resposta = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }],
             temperature: 0.7,
-            max_tokens: 2500
+            max_tokens: 3000,
         });
 
         console.log("✅ Contrato detalhado gerado pela IA com sucesso.");

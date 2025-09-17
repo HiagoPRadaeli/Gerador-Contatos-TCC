@@ -1,5 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- REFERÊNCIAS AOS ELEMENTOS ---
+    const navButtons = document.querySelectorAll('.nav-button');
     const contractForm = document.getElementById('contract-form');
+    const formTitle = document.getElementById('form-title');
+    
+    const formSections = {
+        locacao: document.getElementById('locacao-fields'),
+        venda: document.getElementById('venda-fields'),
+    };
+    
+    const parte1Legend = document.getElementById('parte1-legend');
+    const parte2Legend = document.getElementById('parte2-legend');
+    const objetoLabel = document.getElementById('objeto-label');
+    
     const modalOverlay = document.getElementById('modal-overlay');
     const modalTitle = document.getElementById('modal-title');
     const contractOutput = document.getElementById('contract-output');
@@ -8,145 +21,159 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const printBtn = document.getElementById('print-btn');
 
-    // MÁSCARAS DE ENTRADA
-    const contratanteDoc = document.getElementById('contratante-doc');
-    const contratadaDoc = document.getElementById('contratada-doc');
-    const contratanteTelefone = document.getElementById('contratante-telefone');
-    const contratadaTelefone = document.getElementById('contratada-telefone');
-    const contratoValor = document.getElementById('contrato-valor'); // Novo campo
-    const pagamentoMultaValor = document.getElementById('pagamento-multa-valor'); // Novo campo
-    const pagamentoJuros = document.getElementById('pagamento-juros'); // Juros
+    // --- LÓGICA DA NAVEGAÇÃO ---
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const formType = button.getAttribute('data-form');
 
-    const formatCPF_CNPJ = (value) => {
-        const cleanedValue = value.replace(/\D/g, '');
-        if (cleanedValue.length <= 11) {
-            return cleanedValue.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        } else {
-            return cleanedValue.slice(0, 14).replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
-        }
-    };
-    const formatTelefone = (value) => {
-        const cleanedValue = value.replace(/\D/g, '');
-        const length = cleanedValue.length;
-        if (length <= 10) {
-            return cleanedValue.replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2');
-        } else {
-            return cleanedValue.slice(0, 11).replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
-        }
-    };
-    const formatCurrency = (value) => {
-        let cleanedValue = value.replace(/\D/g, ''); // Remove tudo que não é número
-        if (cleanedValue === '') return '';
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            contractForm.classList.remove('hidden');
+            contractForm.reset(); // Limpa o formulário ao trocar de modelo
 
-        // Adiciona zeros à esquerda se houver menos de 3 dígitos (para centavos)
-        while (cleanedValue.length < 3) {
-            cleanedValue = '0' + cleanedValue;
-        }
+            // Atualiza títulos e labels
+            if (formType === 'locacao') {
+                formTitle.textContent = 'Formulário de Contrato de Locação';
+                parte1Legend.textContent = 'Dados do Locador(a)';
+                parte2Legend.textContent = 'Dados do Locatário(a)';
+                objetoLabel.textContent = 'Objeto do Contrato (Endereço e descrição do imóvel)';
+            } else if (formType === 'venda') {
+                formTitle.textContent = 'Formulário de Contrato de Compra e Venda';
+                parte1Legend.textContent = 'Dados do Vendedor(a)';
+                parte2Legend.textContent = 'Dados do Comprador(a)';
+                objetoLabel.textContent = 'Objeto do Contrato (Descrição detalhada do bem)';
+            } else { // Serviços
+                formTitle.textContent = 'Formulário de Contrato de Prestação de Serviços';
+                parte1Legend.textContent = 'Dados do Contratante';
+                parte2Legend.textContent = 'Dados da Contratada';
+                objetoLabel.textContent = 'Objeto do Contrato (Descrição detalhada dos serviços)';
+            }
 
-        let integerPart = cleanedValue.slice(0, -2);
-        let decimalPart = cleanedValue.slice(-2);
-
-        // Formata a parte inteira com separador de milhares
-        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-        return integerPart + ',' + decimalPart;
-    };
-
-    const formatDecimal = (value) => {
-        let cleanedValue = value.replace(/[^\d,]/g, ''); // Permite apenas números e vírgula
-        const parts = cleanedValue.split(',');
-
-        if (parts.length > 2) { // Evita múltiplas vírgulas
-            cleanedValue = parts[0] + ',' + parts.slice(1).join('');
-        }
-
-        return cleanedValue;
-    };
-
-
-    contratanteDoc.addEventListener('input', (e) => { e.target.value = formatCPF_CNPJ(e.target.value); });
-    contratadaDoc.addEventListener('input', (e) => { e.target.value = formatCPF_CNPJ(e.target.value); });
-    contratanteTelefone.addEventListener('input', (e) => { e.target.value = formatTelefone(e.target.value); });
-    contratadaTelefone.addEventListener('input', (e) => { e.target.value = formatTelefone(e.target.value); });
-    contratoValor.addEventListener('input', (e) => { e.target.value = formatCurrency(e.target.value); });
-    pagamentoMultaValor.addEventListener('input', (e) => { e.target.value = formatCurrency(e.target.value); });
-    pagamentoJuros.addEventListener('input', (e) => { e.target.value = formatDecimal(e.target.value); });
-
-
-    // LÓGICA DO MODAL
-    const closeModal = () => {
-        modalOverlay.classList.remove('active');
-    };
-    closeModalBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (event) => {
-        if (event.target === modalOverlay) { closeModal(); }
+            // Mostra/esconde as seções de formulário específicas
+            Object.values(formSections).forEach(section => section.classList.add('hidden'));
+            if (formSections[formType]) {
+                formSections[formType].classList.remove('hidden');
+            }
+        });
     });
+
+    // --- LÓGICA DAS MÁSCARAS DE ENTRADA ---
+    const inputsToMask = {
+        'parte1-doc': 'cpf_cnpj',
+        'parte2-doc': 'cpf_cnpj',
+        'parte1-telefone': 'telefone',
+        'parte2-telefone': 'telefone',
+        'contrato-valor': 'currency',
+        'locacao-garantia-valor': 'currency',
+    };
+
+    const formatters = {
+        cpf_cnpj: (value) => {
+            const v = value.replace(/\D/g, '');
+            if (v.length <= 11) return v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            return v.slice(0, 14).replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
+        },
+        telefone: (value) => {
+            const v = value.replace(/\D/g, '');
+            if (v.length <= 10) return v.replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d)/, '$1-$2');
+            return v.slice(0, 11).replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+        },
+        currency: (value) => {
+            let v = value.replace(/\D/g, '');
+            v = (parseInt(v, 10) / 100).toFixed(2) + '';
+            v = v.replace(".", ",");
+            v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return "R$ " + v;
+        }
+    };
+    
+    for (const [id, type] of Object.entries(inputsToMask)) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', (e) => {
+                e.target.value = formatters[type](e.target.value);
+            });
+        }
+    }
+
+    // --- LÓGICA DO MODAL ---
+    const closeModal = () => modalOverlay.classList.remove('active');
+    closeModalBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
 
     const displayContractStreaming = (htmlContent) => {
         modalTitle.textContent = 'Contrato Gerado com Sucesso';
         contractOutput.innerHTML = '';
         const clauses = htmlContent.split(/(?=<h2>)/);
         let i = 0;
-        function showNextClause() {
+        const showNextClause = () => {
             if (i < clauses.length) {
-                const clauseHtml = clauses[i];
                 const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = clauseHtml;
+                tempDiv.innerHTML = clauses[i];
                 tempDiv.style.opacity = 0;
                 contractOutput.appendChild(tempDiv);
-                setTimeout(() => {
-                    tempDiv.style.transition = 'opacity 0.5s';
-                    tempDiv.style.opacity = 1;
-                }, 50);
+                setTimeout(() => { tempDiv.style.transition = 'opacity 0.5s'; tempDiv.style.opacity = 1; }, 50);
                 i++;
                 setTimeout(showNextClause, 700);
             } else {
                 modalFooter.style.display = 'flex';
             }
-        }
+        };
         showNextClause();
     };
 
-    // LÓGICA DE ENVIO DO FORMULÁRIO
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO ---
     contractForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
+        
         modalTitle.textContent = 'Gerando seu Contrato...';
         contractOutput.innerHTML = '<p class="loading">Conectando com a IA e redigindo o documento. Por favor, aguarde...</p>';
         modalFooter.style.display = 'none';
         modalOverlay.classList.add('active');
+        
+        const activeFormType = document.querySelector('.nav-button.active').getAttribute('data-form');
 
         const formData = {
+            modeloContrato: activeFormType,
             parte1: {
-                nome: document.getElementById('contratante-nome').value,
-                doc: document.getElementById('contratante-doc').value,
-                endereco: document.getElementById('contratante-endereco').value,
-                email: document.getElementById('contratante-email').value,
-                telefone: document.getElementById('contratante-telefone').value,
+                nome: document.getElementById('parte1-nome').value,
+                doc: document.getElementById('parte1-doc').value,
+                endereco: document.getElementById('parte1-endereco').value,
+                email: document.getElementById('parte1-email').value,
+                telefone: document.getElementById('parte1-telefone').value,
             },
             parte2: {
-                nome: document.getElementById('contratada-nome').value,
-                doc: document.getElementById('contratada-doc').value,
-                endereco: document.getElementById('contratada-endereco').value,
-                email: document.getElementById('contratada-email').value,
-                telefone: document.getElementById('contratada-telefone').value,
+                nome: document.getElementById('parte2-nome').value,
+                doc: document.getElementById('parte2-doc').value,
+                endereco: document.getElementById('parte2-endereco').value,
+                email: document.getElementById('parte2-email').value,
+                telefone: document.getElementById('parte2-telefone').value,
             },
-            detalhes: {
-                modeloContrato: document.getElementById('contrato-modelo').value,
-                nomeContrato: document.getElementById('contrato-nome').value,
+            detalhesContrato: {
                 objeto: document.getElementById('contrato-objeto').value,
                 valor: document.getElementById('contrato-valor').value,
                 formaPagamento: document.getElementById('contrato-pagamento').value,
                 dataInicio: document.getElementById('contrato-inicio').value,
                 dataTermino: document.getElementById('contrato-termino').value,
             },
+            detalhesLocacao: {
+                garantiaTipo: document.getElementById('locacao-garantia-tipo').value,
+                garantiaValor: document.getElementById('locacao-garantia-valor').value,
+                finalidade: document.getElementById('locacao-finalidade').value,
+            },
+            detalhesVenda: {
+                entrega: document.getElementById('venda-entrega').value,
+                condicao: document.getElementById('venda-condicao').value,
+            },
             condicoesPagamento: {
+                diaVencimento: document.getElementById('pagamento-dia-vencimento').value,
+                dadosBancarios: document.getElementById('pagamento-dados-bancarios').value,
                 multaPercentual: document.getElementById('pagamento-multa-percentual').value,
-                multaValor: document.getElementById('pagamento-multa-valor').value,
                 juros: document.getElementById('pagamento-juros').value,
             },
             clausulasOpcionais: {
-                multa: document.getElementById('clausula-multa').checked,
+                multaRescisao: document.getElementById('clausula-multa-rescisao').checked,
                 confidencialidade: document.getElementById('clausula-confidencialidade').checked,
                 exclusividade: document.getElementById('clausula-exclusividade').checked,
             },
@@ -155,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 testemunhas: document.getElementById('gerais-testemunhas').value,
             }
         };
-        
+
         try {
             const response = await fetch('http://localhost:3000/gerar-contrato-completo', {
                 method: 'POST',
@@ -173,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // LÓGICA DOS BOTÕES DO MODAL
+    // --- LÓGICA DOS BOTÕES DO MODAL E RESET ---
     copyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(contractOutput.innerText).then(() => {
             copyBtn.textContent = 'Copiado!';
@@ -181,9 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     printBtn.addEventListener('click', () => { window.print(); });
-
-    // LÓGICA DO BOTÃO CANCELAR
     contractForm.addEventListener('reset', () => {
-        closeModal();
+        // Limpa o formulário e esconde o resultado
     });
 });
