@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px 20px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.form-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    max-width: 850px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+}
+
+.form-header {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 40px;
+}
+
+.form-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    text-align: left;
+}
+
+#contract-form {
+    padding: 30px 40px;
+}
+
+fieldset {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+legend {
+    padding: 0 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #0d6efd; /* Cor azul mais vibrante para a legenda */
+}
+
+/* Flexbox para linhas de formulário */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Grupo de label + input */
+.form-group {
+    flex-grow: 1; /* Permite que o grupo cresça */
+    flex-basis: 0; /* Base flexível */
+    min-width: 200px; /* Largura mínima para evitar que os campos fiquem muito pequenos */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+/* Classes de coluna para controle de largura */
+.form-group.col-1 {
+    flex-basis: calc(33.333% - 14px); /* Para 3 colunas */
+}
+.form-group.col-2 {
+    flex-basis: calc(66.666% - 10px); /* Para 2/3 da largura */
+}
+/* Reajuste para telas menores */
+@media (max-width: 768px) {
+    .form-group.col-1, .form-group.col-2 {
+        flex-basis: 100%; /* Em telas menores, campos ocupam 100% da largura */
+    }
+}
+
+
+label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #8ab4f8;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+textarea {
+    resize: vertical;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os checkboxes quebrem linha */
+    gap: 25px;
+    padding-top: 10px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+}
+
+.loading {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
+    background: white;
+    padding: 25px 35px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #212529;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #6c757d;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.contract-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+.contract-output h2 {
+    font-size: 1.2rem;
+    color: #0056b3;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.contract-output p {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+.modal-footer {
+    display: none;
+    justify-content: flex-end;
+    gap: 15px;
+    border-top: 1px solid #dee2e6;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .modal-overlay,
+    .modal-content,
+    .contract-output,
+    .contract-output * {
+        visibility: visible;
+    }
+    .modal-overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: none;
+    }
+    .modal-content {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: none;
+    }
+}

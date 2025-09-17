@@ -1,0 +1,5 @@
+# Arquivo de chave de API - NUNCA ENVIE ISSO!
+/backend/.env
+
+# Pasta de dependências do Node.js
+/backend/node_modules/
