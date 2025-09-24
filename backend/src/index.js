@@ -17,127 +17,90 @@ app.post('/gerar-contrato-completo', async (req, res) => {
     
     const data = req.body;
 
-    let prompt = `
+    function construirPrompt(data) {
+        let prompt = `
 Você é um especialista em direito contratual brasileiro. Sua tarefa é redigir um contrato formal, completo e juridicamente sólido com base EXCLUSIVAMENTE nos dados fornecidos.
 
 **Modelo do Contrato Solicitado:** ${data.modeloContrato}
 
 **DADOS FORNECIDOS:**
 `;
-
-    // Adiciona as partes com a nomenclatura correta
-    if (data.modeloContrato === 'Locação de Imóvel') {
-        prompt += `
+        if (data.modeloContrato === 'Locação de Imóvel') {
+            prompt += `
 **1. LOCADOR(A):**
-- Nome/Razão Social: ${data.parte1.nome}
-- CPF/CNPJ: ${data.parte1.doc}
-- Endereço: ${data.parte1.endereco}
-- E-mail: ${data.parte1.email}
-- Telefone: ${data.parte1.telefone}
+- Nome/Razão Social: ${data.parte1.nome}, CPF/CNPJ: ${data.parte1.doc}, Endereço: ${data.parte1.endereco}, E-mail: ${data.parte1.email}, Telefone: ${data.parte1.telefone}
 
 **2. LOCATÁRIO(A):**
-- Nome/Razão Social: ${data.parte2.nome}
-- CPF/CNPJ: ${data.parte2.doc}
-- Endereço: ${data.parte2.endereco}
-- E-mail: ${data.parte2.email}
-- Telefone: ${data.parte2.telefone}
+- Nome/Razão Social: ${data.parte2.nome}, CPF/CNPJ: ${data.parte2.doc}, Endereço: ${data.parte2.endereco}, E-mail: ${data.parte2.email}, Telefone: ${data.parte2.telefone}
 `;
-    } else if (data.modeloContrato === 'Venda e Compra') {
-        prompt += `
+        } else if (data.modeloContrato === 'Venda e Compra') {
+            prompt += `
 **1. VENDEDOR(A):**
-- Nome/Razão Social: ${data.parte1.nome}
-- CPF/CNPJ: ${data.parte1.doc}
-- Endereço: ${data.parte1.endereco}
-- E-mail: ${data.parte1.email}
-- Telefone: ${data.parte1.telefone}
+- Nome/Razão Social: ${data.parte1.nome}, CPF/CNPJ: ${data.parte1.doc}, Endereço: ${data.parte1.endereco}, E-mail: ${data.parte1.email}, Telefone: ${data.parte1.telefone}
 
 **2. COMPRADOR(A):**
-- Nome/Razão Social: ${data.parte2.nome}
-- CPF/CNPJ: ${data.parte2.doc}
-- Endereço: ${data.parte2.endereco}
-- E-mail: ${data.parte2.email}
-- Telefone: ${data.parte2.telefone}
+- Nome/Razão Social: ${data.parte2.nome}, CPF/CNPJ: ${data.parte2.doc}, Endereço: ${data.parte2.endereco}, E-mail: ${data.parte2.email}, Telefone: ${data.parte2.telefone}
 `;
-    } else { // Prestação de Serviços
+        }
+        
         prompt += `
-**1. CONTRATANTE:**
-- Nome/Razão Social: ${data.parte1.nome}
-- CPF/CNPJ: ${data.parte1.doc}
-- Endereço: ${data.parte1.endereco}
-- E-mail: ${data.parte1.email}
-- Telefone: ${data.parte1.telefone}
-
-**2. CONTRATADA:**
-- Nome/Razão Social: ${data.parte2.nome}
-- CPF/CNPJ: ${data.parte2.doc}
-- Endereço: ${data.parte2.endereco}
-- E-mail: ${data.parte2.email}
-- Telefone: ${data.parte2.telefone}
-`;
-    }
-    
-    prompt += `
 **3. DETALHES GERAIS DO CONTRATO:**
 - Objeto: ${data.detalhesContrato.objeto}
 - Valor Total: ${data.detalhesContrato.valor}
 - Forma de Pagamento Principal: ${data.detalhesContrato.formaPagamento}
-- Data de Início: ${data.detalhesContrato.dataInicio}
+- Data de Início/Assinatura: ${data.detalhesContrato.dataInicio}
 - Data de Término: ${data.detalhesContrato.dataTermino || 'Prazo Indeterminado'}
 `;
 
-    if (data.modeloContrato === 'Locação de Imóvel') {
-        prompt += `
+        if (data.modeloContrato === 'Locação de Imóvel') {
+            prompt += `
 **4. DETALHES DA LOCAÇÃO:**
 - Tipo de Garantia: ${data.detalhesLocacao.garantiaTipo}
 - Valor da Garantia: ${data.detalhesLocacao.garantiaValor || 'Não aplicável'}
-- Finalidade: ${data.detalhesLocacao.finalidade}
+- Índice de Reajuste Anual: ${data.detalhesLocacao.reajusteIndice}
+- Incluir menção ao Termo de Vistoria: ${data.detalhesLocacao.mencionaVistoria ? 'Sim' : 'Não'}
 `;
-    }
-    
-    if (data.modeloContrato === 'Venda e Compra') {
-        prompt += `
+        } else if (data.modeloContrato === 'Venda e Compra') {
+            prompt += `
 **4. DETALHES DA VENDA:**
-- Data e Local de Entrega: ${data.detalhesVenda.entrega}
-- Condição do Bem: ${data.detalhesVenda.condicao}
+- Bens Incluídos: ${data.detalhesVenda.bensIncluidos || 'Apenas o objeto principal'}
+- Bens NÃO Incluídos: ${data.detalhesVenda.bensExcluidos || 'Nenhum'}
+- Declaração de Inexistência de Dívidas: ${data.detalhesVenda.livreDeDividas ? 'Sim' : 'Não'}
 `;
-    }
-    
-    prompt += `
+        }
+        
+        prompt += `
 **5. CONDIÇÕES DE PAGAMENTO DETALHADAS:**
 - Dia do Vencimento das Parcelas: todo dia ${data.condicoesPagamento.diaVencimento || 'N/A'}
 - Dados Bancários para Pagamento: ${data.condicoesPagamento.dadosBancarios || 'Não especificado'}
-- Multa por Atraso: ${data.condicoesPagamento.multaPercentual || '0'}%
-- Juros Mensais por Atraso: ${data.condicoesPagamento.juros || '0'}%
+- Multa por Atraso: ${data.condicoesPagamento.multaPercentualAtraso || '0'}%
+- Juros Mensais por Atraso: ${data.condicoesPagamento.jurosAtraso || '0'}%
 
-**6. DISPOSIÇÕES GERAIS:**
+**6. PENALIDADES E DISPOSIÇÕES FINAIS:**
+- Multa por Quebra de Contrato: ${data.penalidades.multaRescisao || 'Não especificado'}
 - Foro de Eleição: ${data.disposicoesGerais.foro}
 - Número de Testemunhas: ${data.disposicoesGerais.testemunhas}
 `;
 
-    prompt += `
+        prompt += `
 **INSTRUÇÕES DE GERAÇÃO:**
-1.  Comece com o título do contrato.
-2.  Inicie com a cláusula de qualificação das partes, usando a nomenclatura correta (Locador/Locatário, Vendedor/Comprador, Contratante/Contratada).
-3.  Crie as cláusulas essenciais para o modelo de contrato "${data.modeloContrato}", detalhando o Objeto, o Preço e as Condições de Pagamento (incluindo as regras de atraso como multa e juros), o Prazo de Vigência e outras pertinentes ao modelo (como Garantia para locação ou Entrega para venda).
+1.  Redija um contrato completo e formal, começando com o título apropriado (Ex: CONTRATO DE LOCAÇÃO DE IMÓVEL RESIDENCIAL).
+2.  Inicie com a cláusula de QUALIFICAÇÃO DAS PARTES, usando a nomenclatura correta (LOCADOR/LOCATÁRIO ou VENDEDOR/COMPRADOR).
+3.  Crie as cláusulas essenciais para o modelo de contrato "${data.modeloContrato}", detalhando o Objeto, o Preço e as Condições de Pagamento, o Prazo de Vigência e outras pertinentes ao modelo.
+4.  Crie a cláusula DA RESCISÃO, incluindo a multa por quebra de contrato, se especificada.
+5.  Crie a cláusula DO FORO.
+6.  Finalize com um parágrafo de fecho padrão e adicione as linhas para as assinaturas das partes e das ${data.disposicoesGerais.testemunhas} testemunhas.
+7.  A saída deve ser em HTML, com títulos de cláusulas em <h2> (Ex: <h2>Cláusula Primeira - Do Objeto</h2>) e o texto em <p>. Não inclua as tags <html>, <head> ou <body>.
 `;
-    
-    const opcionais = [];
-    if (data.clausulasOpcionais.multaRescisao) opcionais.push("Multa por Rescisão Contratual");
-    if (data.clausulasOpcionais.confidencialidade) opcionais.push("Confidencialidade");
-    if (data.clausulasOpcionais.exclusividade) opcionais.push("Exclusividade");
-
-    if (opcionais.length > 0) {
-        prompt += `4. Inclua, obrigatoriamente, as seguintes cláusulas opcionais: ${opcionais.join(', ')}.\n`;
+        return prompt;
     }
-
-    prompt += `5. Adicione uma cláusula "Do Foro" com a cidade e estado fornecidos.
-6.  Finalize com um parágrafo de fecho padrão ("E, por estarem assim justos e contratados...") e adicione as linhas para as assinaturas das partes e das ${data.disposicoesGerais.testemunhas} testemunhas.
-7.  A saída deve ser em HTML, com títulos de cláusulas em <h2> (Ex: <h2>Cláusula Primeira - Do Objeto</h2>) e o texto em <p>. Não inclua as tags <html>, <head> ou <body>.`;
+    
+    const promptFinal = construirPrompt(data);
     
     try {
-        const resposta = await openai.chat.completions.create({
+        const resposta = await openai.chat.completions.create({ // CORREÇÃO DE TYPO AQUI
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }],
+            messages: [{ role: "user", content: promptFinal }],
             temperature: 0.7,
             max_tokens: 3000,
         });

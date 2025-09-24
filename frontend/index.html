@@ -15,7 +15,6 @@
         </header>
 
         <nav class="main-nav">
-            <button class="nav-button" data-form="servicos">Prestação de Serviços</button>
             <button class="nav-button" data-form="venda">Compra e Venda</button>
             <button class="nav-button" data-form="locacao">Locação de Imóvel</button>
         </nav>
@@ -53,14 +52,14 @@
                 <legend>Detalhes do Contrato</legend>
                 <div class="form-group">
                     <label for="contrato-objeto" id="objeto-label">Objeto do Contrato</label>
-                    <textarea id="contrato-objeto" rows="4" required></textarea>
+                    <textarea id="contrato-objeto" rows="3" required></textarea>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label for="contrato-valor">Valor Total do Contrato</label><input type="text" id="contrato-valor" placeholder="R$ 0,00" required></div>
-                    <div class="form-group"><label for="contrato-pagamento">Forma de Pagamento Principal</label><input type="text" id="contrato-pagamento" placeholder="Ex: Pix, Boleto Mensal" required></div>
+                    <div class="form-group"><label for="contrato-valor" id="valor-label">Valor</label><input type="text" id="contrato-valor" placeholder="R$ 0,00" required></div>
+                    <div class="form-group"><label for="contrato-pagamento">Forma de Pagamento Principal</label><input type="text" id="contrato-pagamento" placeholder="Ex: À vista, em espécie" required></div>
                 </div>
                  <div class="form-row">
-                    <div class="form-group"><label for="contrato-inicio">Data de Início</label><input type="date" id="contrato-inicio" required></div>
+                    <div class="form-group"><label for="contrato-inicio">Data de Início / Assinatura</label><input type="date" id="contrato-inicio" required></div>
                     <div class="form-group"><label for="contrato-termino">Data de Término (se houver)</label><input type="date" id="contrato-termino"></div>
                 </div>
             </fieldset>
@@ -70,40 +69,39 @@
                 <div class="form-row">
                     <div class="form-group"><label for="locacao-garantia-tipo">Tipo de Garantia</label><select id="locacao-garantia-tipo"><option value="Não se aplica" selected>Não se aplica</option><option value="Caução em Dinheiro">Caução em Dinheiro</option><option value="Fiador">Fiador</option><option value="Seguro Fiança">Seguro Fiança</option></select></div>
                     <div class="form-group"><label for="locacao-garantia-valor">Valor da Garantia (se aplicável)</label><input type="text" id="locacao-garantia-valor" placeholder="R$ 0,00"></div>
+                    <div class="form-group"><label for="locacao-reajuste-indice">Índice de Reajuste Anual</label><select id="locacao-reajuste-indice"><option value="INPC">INPC</option><option value="IGP-M">IGP-M</option></select></div>
                 </div>
-                <div class="form-group"><label for="locacao-finalidade">Finalidade da Locação</label><input type="text" id="locacao-finalidade" value="Residencial"></div>
+                <div class="checkbox-group"><input type="checkbox" id="locacao-vistoria"><label for="locacao-vistoria">Mencionar que um Termo de Vistoria será anexado</label></div>
             </fieldset>
 
             <fieldset class="form-section hidden" id="venda-fields">
                 <legend>Detalhes Específicos da Venda</legend>
                  <div class="form-group">
-                    <label for="venda-entrega">Data e Local da Entrega do Bem</label>
-                    <input type="text" id="venda-entrega" placeholder="Ex: 30/12/2025 na residência do comprador">
+                    <label for="venda-bens-incluidos">Bens Incluídos na Venda (liste um por linha)</label>
+                    <textarea id="venda-bens-incluidos" rows="4" placeholder="Ex: 01 Rampa de lavagem..."></textarea>
                 </div>
                  <div class="form-group">
-                    <label for="venda-condicao">Condição do Bem</label>
-                    <input type="text" id="venda-condicao" placeholder="Ex: Novo, usado, no estado em que se encontra">
+                    <label for="venda-bens-excluidos">Bens NÃO Incluídos na Venda</label>
+                    <input type="text" id="venda-bens-excluidos" placeholder="Ex: O imóvel onde o estabelecimento se encontra">
                 </div>
+                <div class="checkbox-group"><input type="checkbox" id="venda-dividas-check"><label for="venda-dividas-check">Vendedor declara que o bem/estabelecimento está livre de dívidas e ônus.</label></div>
             </fieldset>
 
             <fieldset>
                 <legend>Condições de Pagamento Detalhadas</legend>
+                <div class="form-row"><div class="form-group"><label for="pagamento-dia-vencimento">Dia do Vencimento (para parcelas/aluguel)</label><input type="number" id="pagamento-dia-vencimento" min="1" max="31" placeholder="Ex: 10"></div></div>
+                <div class="form-group"><label for="pagamento-dados-bancarios">Dados para Pagamento (se aplicável)</label><input type="text" id="pagamento-dados-bancarios" placeholder="Ex: Pix (CPF/CNPJ), ou Banco, Agência, Conta"></div>
                 <div class="form-row">
-                    <div class="form-group"><label for="pagamento-dia-vencimento">Dia do Vencimento (para parcelas)</label><input type="number" id="pagamento-dia-vencimento" min="1" max="31" placeholder="Ex: 10"></div>
-                </div>
-                <div class="form-group"><label for="pagamento-dados-bancarios">Dados Bancários para Pagamento (se aplicável)</label><input type="text" id="pagamento-dados-bancarios" placeholder="Ex: Pix (CPF/CNPJ), ou Banco, Agência, Conta"></div>
-                 <div class="form-row">
                     <div class="form-group"><label for="pagamento-multa-percentual">Multa por Atraso (%)</label><input type="number" id="pagamento-multa-percentual" placeholder="Ex: 2"></div>
                     <div class="form-group"><label for="pagamento-juros">Juros Mensais por Atraso (%)</label><input type="number" id="pagamento-juros" placeholder="Ex: 1"></div>
                 </div>
             </fieldset>
             
             <fieldset>
-                <legend>Cláusulas Opcionais</legend>
-                <div class="checkbox-container">
-                    <div class="checkbox-group"><input type="checkbox" id="clausula-multa-rescisao"><label for="clausula-multa-rescisao">Multa por Rescisão</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="clausula-confidencialidade"><label for="clausula-confidencialidade">Confidencialidade</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="clausula-exclusividade"><label for="clausula-exclusividade">Exclusividade</label></div>
+                <legend>Cláusulas Opcionais e Penalidades</legend>
+                <div class="form-group">
+                    <label for="clausula-multa-rescisao">Multa por Quebra de Contrato (ex: 10% do valor total, 2x o valor do aluguel)</label>
+                    <input type="text" id="clausula-multa-rescisao" placeholder="Ex: 2x o valor do aluguel">
                 </div>
             </fieldset>
             
@@ -124,15 +122,9 @@
     
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Gerando seu Contrato...</h2>
-                <button id="close-modal-btn" class="close-modal-btn">&times;</button>
-            </div>
+            <div class="modal-header"><h2 id="modal-title">Gerando seu Contrato...</h2><button id="close-modal-btn" class="close-modal-btn">&times;</button></div>
             <div id="contract-output" class="contract-output"></div>
-            <div id="modal-footer" class="modal-footer">
-                <button id="copy-btn" class="btn btn-secondary">Copiar Texto</button>
-                <button id="print-btn" class="btn btn-primary">Imprimir Contrato</button>
-            </div>
+            <div id="modal-footer" class="modal-footer"><button id="copy-btn" class="btn btn-secondary">Copiar Texto</button><button id="print-btn" class="btn btn-primary">Imprimir Contrato</button></div>
         </div>
     </div>
 

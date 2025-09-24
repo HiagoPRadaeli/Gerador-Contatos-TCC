@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const parte1Legend = document.getElementById('parte1-legend');
     const parte2Legend = document.getElementById('parte2-legend');
     const objetoLabel = document.getElementById('objeto-label');
+    const valorLabel = document.getElementById('valor-label');
     
     const modalOverlay = document.getElementById('modal-overlay');
     const modalTitle = document.getElementById('modal-title');
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const printBtn = document.getElementById('print-btn');
 
-    // --- LÓGICA DA NAVEGAÇÃO ---
+    // --- LÓGICA DA NAVEGAÇÃO (CORRIGIDA) ---
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const formType = button.getAttribute('data-form');
@@ -29,28 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
             navButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             
-            contractForm.classList.remove('hidden');
-            contractForm.reset(); // Limpa o formulário ao trocar de modelo
+            // A linha problemática "contractForm.reset()" foi removida daqui.
+            // Isso impede que o formulário se esconda logo após aparecer.
+            contractForm.classList.remove('hidden'); 
 
-            // Atualiza títulos e labels
             if (formType === 'locacao') {
                 formTitle.textContent = 'Formulário de Contrato de Locação';
                 parte1Legend.textContent = 'Dados do Locador(a)';
                 parte2Legend.textContent = 'Dados do Locatário(a)';
+                valorLabel.textContent = 'Valor Mensal do Aluguel';
                 objetoLabel.textContent = 'Objeto do Contrato (Endereço e descrição do imóvel)';
             } else if (formType === 'venda') {
                 formTitle.textContent = 'Formulário de Contrato de Compra e Venda';
                 parte1Legend.textContent = 'Dados do Vendedor(a)';
                 parte2Legend.textContent = 'Dados do Comprador(a)';
+                valorLabel.textContent = 'Valor Total da Venda';
                 objetoLabel.textContent = 'Objeto do Contrato (Descrição detalhada do bem)';
-            } else { // Serviços
-                formTitle.textContent = 'Formulário de Contrato de Prestação de Serviços';
-                parte1Legend.textContent = 'Dados do Contratante';
-                parte2Legend.textContent = 'Dados da Contratada';
-                objetoLabel.textContent = 'Objeto do Contrato (Descrição detalhada dos serviços)';
             }
 
-            // Mostra/esconde as seções de formulário específicas
             Object.values(formSections).forEach(section => section.classList.add('hidden'));
             if (formSections[formType]) {
                 formSections[formType].classList.remove('hidden');
@@ -60,14 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA DAS MÁSCARAS DE ENTRADA ---
     const inputsToMask = {
-        'parte1-doc': 'cpf_cnpj',
-        'parte2-doc': 'cpf_cnpj',
-        'parte1-telefone': 'telefone',
-        'parte2-telefone': 'telefone',
-        'contrato-valor': 'currency',
-        'locacao-garantia-valor': 'currency',
+        'parte1-doc': 'cpf_cnpj', 'parte2-doc': 'cpf_cnpj',
+        'parte1-telefone': 'telefone', 'parte2-telefone': 'telefone',
+        'contrato-valor': 'currency', 'locacao-garantia-valor': 'currency',
     };
-
     const formatters = {
         cpf_cnpj: (value) => {
             const v = value.replace(/\D/g, '');
@@ -81,19 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         currency: (value) => {
             let v = value.replace(/\D/g, '');
+            if (!v) return '';
             v = (parseInt(v, 10) / 100).toFixed(2) + '';
             v = v.replace(".", ",");
             v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             return "R$ " + v;
         }
     };
-    
     for (const [id, type] of Object.entries(inputsToMask)) {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener('input', (e) => {
-                e.target.value = formatters[type](e.target.value);
-            });
+            element.addEventListener('input', (e) => { e.target.value = formatters[type](e.target.value); });
         }
     }
 
@@ -101,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = () => modalOverlay.classList.remove('active');
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
-
     const displayContractStreaming = (htmlContent) => {
         modalTitle.textContent = 'Contrato Gerado com Sucesso';
         contractOutput.innerHTML = '';
@@ -126,61 +116,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE ENVIO DO FORMULÁRIO ---
     contractForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        
         modalTitle.textContent = 'Gerando seu Contrato...';
         contractOutput.innerHTML = '<p class="loading">Conectando com a IA e redigindo o documento. Por favor, aguarde...</p>';
         modalFooter.style.display = 'none';
         modalOverlay.classList.add('active');
         
         const activeFormType = document.querySelector('.nav-button.active').getAttribute('data-form');
-
         const formData = {
             modeloContrato: activeFormType,
-            parte1: {
-                nome: document.getElementById('parte1-nome').value,
-                doc: document.getElementById('parte1-doc').value,
-                endereco: document.getElementById('parte1-endereco').value,
-                email: document.getElementById('parte1-email').value,
-                telefone: document.getElementById('parte1-telefone').value,
-            },
-            parte2: {
-                nome: document.getElementById('parte2-nome').value,
-                doc: document.getElementById('parte2-doc').value,
-                endereco: document.getElementById('parte2-endereco').value,
-                email: document.getElementById('parte2-email').value,
-                telefone: document.getElementById('parte2-telefone').value,
-            },
-            detalhesContrato: {
-                objeto: document.getElementById('contrato-objeto').value,
-                valor: document.getElementById('contrato-valor').value,
-                formaPagamento: document.getElementById('contrato-pagamento').value,
-                dataInicio: document.getElementById('contrato-inicio').value,
-                dataTermino: document.getElementById('contrato-termino').value,
-            },
-            detalhesLocacao: {
-                garantiaTipo: document.getElementById('locacao-garantia-tipo').value,
-                garantiaValor: document.getElementById('locacao-garantia-valor').value,
-                finalidade: document.getElementById('locacao-finalidade').value,
-            },
-            detalhesVenda: {
-                entrega: document.getElementById('venda-entrega').value,
-                condicao: document.getElementById('venda-condicao').value,
-            },
-            condicoesPagamento: {
-                diaVencimento: document.getElementById('pagamento-dia-vencimento').value,
-                dadosBancarios: document.getElementById('pagamento-dados-bancarios').value,
-                multaPercentual: document.getElementById('pagamento-multa-percentual').value,
-                juros: document.getElementById('pagamento-juros').value,
-            },
-            clausulasOpcionais: {
-                multaRescisao: document.getElementById('clausula-multa-rescisao').checked,
-                confidencialidade: document.getElementById('clausula-confidencialidade').checked,
-                exclusividade: document.getElementById('clausula-exclusividade').checked,
-            },
-            disposicoesGerais: {
-                foro: document.getElementById('gerais-foro').value,
-                testemunhas: document.getElementById('gerais-testemunhas').value,
-            }
+            parte1: { nome: document.getElementById('parte1-nome').value, doc: document.getElementById('parte1-doc').value, endereco: document.getElementById('parte1-endereco').value, email: document.getElementById('parte1-email').value, telefone: document.getElementById('parte1-telefone').value, },
+            parte2: { nome: document.getElementById('parte2-nome').value, doc: document.getElementById('parte2-doc').value, endereco: document.getElementById('parte2-endereco').value, email: document.getElementById('parte2-email').value, telefone: document.getElementById('parte2-telefone').value, },
+            detalhesContrato: { objeto: document.getElementById('contrato-objeto').value, valor: document.getElementById('contrato-valor').value, formaPagamento: document.getElementById('contrato-pagamento').value, dataInicio: document.getElementById('contrato-inicio').value, dataTermino: document.getElementById('contrato-termino').value, },
+            detalhesLocacao: { garantiaTipo: document.getElementById('locacao-garantia-tipo').value, garantiaValor: document.getElementById('locacao-garantia-valor').value, reajusteIndice: document.getElementById('locacao-reajuste-indice').value, mencionaVistoria: document.getElementById('locacao-vistoria').checked, },
+            detalhesVenda: { bensIncluidos: document.getElementById('venda-bens-incluidos').value, bensExcluidos: document.getElementById('venda-bens-excluidos').value, livreDeDividas: document.getElementById('venda-dividas-check').checked, },
+            condicoesPagamento: { diaVencimento: document.getElementById('pagamento-dia-vencimento').value, dadosBancarios: document.getElementById('pagamento-dados-bancarios').value, multaPercentualAtraso: document.getElementById('pagamento-multa-percentual').value, jurosAtraso: document.getElementById('pagamento-juros').value, },
+            penalidades: { multaRescisao: document.getElementById('clausula-multa-rescisao').value, },
+            disposicoesGerais: { foro: document.getElementById('gerais-foro').value, testemunhas: document.getElementById('gerais-testemunhas').value, }
         };
 
         try {
@@ -208,7 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     printBtn.addEventListener('click', () => { window.print(); });
+    
+    // O botão 'Limpar' (type="reset") limpa os campos e esconde o formulário, resetando a UI.
     contractForm.addEventListener('reset', () => {
-        // Limpa o formulário e esconde o resultado
+        Object.values(formSections).forEach(section => section.classList.add('hidden'));
+        contractForm.classList.add('hidden');
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        closeModal();
     });
 });
