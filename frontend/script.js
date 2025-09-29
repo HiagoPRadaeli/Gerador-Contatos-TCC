@@ -3,17 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-button');
     const contractForm = document.getElementById('contract-form');
     const formTitle = document.getElementById('form-title');
-    
     const formSections = {
         locacao: document.getElementById('locacao-fields'),
         venda: document.getElementById('venda-fields'),
     };
-    
     const parte1Legend = document.getElementById('parte1-legend');
     const parte2Legend = document.getElementById('parte2-legend');
     const objetoLabel = document.getElementById('objeto-label');
     const valorLabel = document.getElementById('valor-label');
-    
     const modalOverlay = document.getElementById('modal-overlay');
     const modalTitle = document.getElementById('modal-title');
     const contractOutput = document.getElementById('contract-output');
@@ -26,14 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const formType = button.getAttribute('data-form');
-
             navButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+            contractForm.classList.remove('hidden');
             
-            // A linha problemática "contractForm.reset()" foi removida daqui.
-            // Isso impede que o formulário se esconda logo após aparecer.
-            contractForm.classList.remove('hidden'); 
-
             if (formType === 'locacao') {
                 formTitle.textContent = 'Formulário de Contrato de Locação';
                 parte1Legend.textContent = 'Dados do Locador(a)';
@@ -92,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = () => modalOverlay.classList.remove('active');
     closeModalBtn.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
     const displayContractStreaming = (htmlContent) => {
         modalTitle.textContent = 'Contrato Gerado com Sucesso';
         contractOutput.innerHTML = '';
@@ -122,10 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.classList.add('active');
         
         const activeFormType = document.querySelector('.nav-button.active').getAttribute('data-form');
+
         const formData = {
             modeloContrato: activeFormType,
-            parte1: { nome: document.getElementById('parte1-nome').value, doc: document.getElementById('parte1-doc').value, endereco: document.getElementById('parte1-endereco').value, email: document.getElementById('parte1-email').value, telefone: document.getElementById('parte1-telefone').value, },
-            parte2: { nome: document.getElementById('parte2-nome').value, doc: document.getElementById('parte2-doc').value, endereco: document.getElementById('parte2-endereco').value, email: document.getElementById('parte2-email').value, telefone: document.getElementById('parte2-telefone').value, },
+            parte1: { nome: document.getElementById('parte1-nome').value, doc: document.getElementById('parte1-doc').value, rg: document.getElementById('parte1-rg').value, nacionalidade: document.getElementById('parte1-nacionalidade').value, estadoCivil: document.getElementById('parte1-estado-civil').value, profissao: document.getElementById('parte1-profissao').value, endereco: document.getElementById('parte1-endereco').value, email: document.getElementById('parte1-email').value, telefone: document.getElementById('parte1-telefone').value, },
+            parte2: { nome: document.getElementById('parte2-nome').value, doc: document.getElementById('parte2-doc').value, rg: document.getElementById('parte2-rg').value, nacionalidade: document.getElementById('parte2-nacionalidade').value, estadoCivil: document.getElementById('parte2-estado-civil').value, profissao: document.getElementById('parte2-profissao').value, endereco: document.getElementById('parte2-endereco').value, email: document.getElementById('parte2-email').value, telefone: document.getElementById('parte2-telefone').value, },
             detalhesContrato: { objeto: document.getElementById('contrato-objeto').value, valor: document.getElementById('contrato-valor').value, formaPagamento: document.getElementById('contrato-pagamento').value, dataInicio: document.getElementById('contrato-inicio').value, dataTermino: document.getElementById('contrato-termino').value, },
             detalhesLocacao: { garantiaTipo: document.getElementById('locacao-garantia-tipo').value, garantiaValor: document.getElementById('locacao-garantia-valor').value, reajusteIndice: document.getElementById('locacao-reajuste-indice').value, mencionaVistoria: document.getElementById('locacao-vistoria').checked, },
             detalhesVenda: { bensIncluidos: document.getElementById('venda-bens-incluidos').value, bensExcluidos: document.getElementById('venda-bens-excluidos').value, livreDeDividas: document.getElementById('venda-dividas-check').checked, },
@@ -160,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     printBtn.addEventListener('click', () => { window.print(); });
     
-    // O botão 'Limpar' (type="reset") limpa os campos e esconde o formulário, resetando a UI.
     contractForm.addEventListener('reset', () => {
         Object.values(formSections).forEach(section => section.classList.add('hidden'));
         contractForm.classList.add('hidden');
