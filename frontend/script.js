@@ -3,14 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-button');
     const contractForm = document.getElementById('contract-form');
     const formTitle = document.getElementById('form-title');
+    
     const formSections = {
         locacao: document.getElementById('locacao-fields'),
         venda: document.getElementById('venda-fields'),
     };
+    
     const parte1Legend = document.getElementById('parte1-legend');
     const parte2Legend = document.getElementById('parte2-legend');
     const objetoLabel = document.getElementById('objeto-label');
     const valorLabel = document.getElementById('valor-label');
+    
     const modalOverlay = document.getElementById('modal-overlay');
     const modalTitle = document.getElementById('modal-title');
     const contractOutput = document.getElementById('contract-output');
@@ -25,8 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const formType = button.getAttribute('data-form');
             navButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            contractForm.classList.remove('hidden');
             
+            contractForm.classList.remove('hidden'); 
+
             if (formType === 'locacao') {
                 formTitle.textContent = 'Formulário de Contrato de Locação';
                 parte1Legend.textContent = 'Dados do Locador(a)';
@@ -107,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showNextClause();
     };
 
-    // --- LÓGICA DE ENVIO DO FORMULÁRIO ---
+    // --- LÓGICA DE ENVIO DO FORMULÁRIO (CORRIGIDA) ---
     contractForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         modalTitle.textContent = 'Gerando seu Contrato...';
@@ -125,7 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
             detalhesLocacao: { garantiaTipo: document.getElementById('locacao-garantia-tipo').value, garantiaValor: document.getElementById('locacao-garantia-valor').value, reajusteIndice: document.getElementById('locacao-reajuste-indice').value, mencionaVistoria: document.getElementById('locacao-vistoria').checked, },
             detalhesVenda: { bensIncluidos: document.getElementById('venda-bens-incluidos').value, bensExcluidos: document.getElementById('venda-bens-excluidos').value, livreDeDividas: document.getElementById('venda-dividas-check').checked, },
             condicoesPagamento: { diaVencimento: document.getElementById('pagamento-dia-vencimento').value, dadosBancarios: document.getElementById('pagamento-dados-bancarios').value, multaPercentualAtraso: document.getElementById('pagamento-multa-percentual').value, jurosAtraso: document.getElementById('pagamento-juros').value, },
-            penalidades: { multaRescisao: document.getElementById('clausula-multa-rescisao').value, },
+            // COLETA DE DADOS CORRIGIDA AQUI
+            penalidades: { 
+                multaRescisao: document.getElementById('clausula-multa-rescisao').value 
+            },
+            clausulasOpcionais: {
+                confidencialidade: document.getElementById('clausula-confidencialidade').checked,
+                exclusividade: document.getElementById('clausula-exclusividade').checked,
+            },
             disposicoesGerais: { foro: document.getElementById('gerais-foro').value, testemunhas: document.getElementById('gerais-testemunhas').value, }
         };
 

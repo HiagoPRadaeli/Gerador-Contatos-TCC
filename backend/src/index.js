@@ -87,7 +87,7 @@ ${parte2_text}
 
         prompt += `
 **INSTRUÇÕES DE GERAÇÃO:**
-1.  Comece com o título do contrato (Ex: CONTRATO DE LOCAÇÃO DE IMÓVEL RESIDENCIAL).
+1.  Redija um contrato completo e formal, começando com o título apropriado (Ex: CONTRATO DE LOCAÇÃO DE IMÓVEL RESIDENCIAL).
 2.  **INSTRUÇÃO OBRIGATÓRIA PARA A CLÁUSULA "QUALIFICAÇÃO DAS PARTES":** Redija esta cláusula em formato de parágrafo, utilizando **TODOS** os dados fornecidos para cada parte (Nome, Nacionalidade, Estado Civil, Profissão, CPF/CNPJ, RG, Endereço). **NÃO use placeholders como '[Nome do Vendedor]'**. Use os dados reais fornecidos. Siga o exemplo: "Pelo presente instrumento, de um lado, [NOME DA PARTE 1], nacionalidade [NACIONALIDADE DA PARTE 1], estado civil [ESTADO CIVIL DA PARTE 1], profissão [PROFISSÃO DA PARTE 1], portador do RG nº [RG DA PARTE 1] e inscrito no CPF/CNPJ sob o nº [DOC DA PARTE 1], residente e domiciliado em [ENDEREÇO DA PARTE 1], doravante denominado(a) [PAPEL DA PARTE 1]...". Faça o mesmo para a PARTE 2.
 3.  Crie as cláusulas essenciais para o modelo de contrato "${data.modeloContrato}", detalhando o Objeto, o Preço e as Condições de Pagamento, o Prazo de Vigência e outras pertinentes ao modelo.
 4.  Crie a cláusula DA RESCISÃO, incluindo a multa por quebra de contrato, se especificada.
@@ -101,6 +101,7 @@ ${parte2_text}
     const promptFinal = construirPrompt(data);
     
     try {
+        // ERRO DE DIGITAÇÃO CORRIGIDO AQUI:
         const resposta = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{ "role": "user", "content": promptFinal }],
